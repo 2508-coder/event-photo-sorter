@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Event QR Generator</title>
+<style>
+ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:radial-gradient(900px 600px at 50% -10%,#14241b,#0a130e 60%);color:#eef3ec;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0}
+ .box{background:#11201a;border:1px solid #284036;border-radius:18px;padding:26px;width:380px;max-width:92%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+ h2{margin:0 0 4px} p{color:#96a99c;font-size:13px;margin:6px 0 14px}
+ input{width:100%;padding:11px;border-radius:9px;border:1px solid #284036;background:#15271e;color:#fff;margin-bottom:12px}
+ button{padding:11px 18px;border:none;border-radius:9px;background:linear-gradient(135deg,#1fbf75,#e8b54a);color:#08130d;font-weight:700;cursor:pointer}
+ #qr{margin:18px auto 6px;background:#fff;padding:14px;border-radius:14px;display:inline-block;min-height:10px}
+ a.dl{display:none;margin-top:10px;color:#e8b54a;text-decoration:none;font-weight:600}
+</style></head>
+<body><div class="box">
+ <h2>📸 Event QR Code</h2>
+ <p>Paste your deployed guest link (ends with <b>/guest.html</b>) to make a QR for your banner.</p>
+ <input id="url" placeholder="https://your-site.netlify.app/guest.html" />
+ <button onclick="gen()">Generate QR</button>
+ <div id="qr"></div>
+ <a id="dl" class="dl" download="event-qr.png">⬇️ Download QR (PNG)</a>
+ <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+ <script>
+ function gen(){var u=document.getElementById('url').value.trim();if(!u)return;var box=document.getElementById('qr');box.innerHTML='';var c=document.createElement('canvas');QRCode.toCanvas(c,u,{width:300,margin:2,color:{dark:'#08130d',light:'#ffffff'}},function(e){if(e){box.textContent='Error: '+e;return;}box.appendChild(c);var d=document.getElementById('dl');d.href=c.toDataURL('image/png');d.style.display='inline-block';});}
+ </script>
+</div></body></html>

@@ -1,0 +1,18 @@
+project_id = "nyhjkcrbomolgeraikss"
+
+# Allow the email-alert function to be called without a user JWT
+[functions.notify-watchers]
+verify_jwt = false
+
+# Drive sync is triggered by a DB webhook (not a user). It checks its own
+# shared secret header instead of a JWT.
+[functions.drive-sync]
+verify_jwt = false
+
+# Drive import runs on a cron. Also checks the shared secret header.
+[functions.drive-import]
+verify_jwt = false
+
+# One-off storage cleanup. Checks the shared secret header.
+[functions.cleanup-storage]
+verify_jwt = false

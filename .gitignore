@@ -1,0 +1,20 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+
+# secrets / env (NEVER commit these)
+.env
+.env.*
+!.env.example
+
+# supabase local
+supabase/.branches
+supabase/.temp
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
