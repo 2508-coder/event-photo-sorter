@@ -115,6 +115,9 @@ export async function detectFaces(imgEl) {
 }
 
 function euclidean(a, b) {
+  // Guard: different-length descriptors (e.g. faceapi 128-d vs human 1024-d)
+  // are from different engines and must NEVER be treated as a match.
+  if (!a || !b || a.length !== b.length) return Infinity;
   let s = 0;
   for (let i = 0; i < a.length; i++) { const d = a[i] - b[i]; s += d * d; }
   return Math.sqrt(s);
