@@ -126,6 +126,7 @@ export default function GuestApp() {
   return (
     <div className="guest">
       <div className="guest-hero">
+        <img src="/logo.png" className="brand-logo" alt="Karnavati University SGC" onError={(e) => { e.currentTarget.style.display = "none"; }} />
         <h1>📸 Find Your Photos</h1>
         <p>Scan your face to instantly get every photo of you from the event.</p>
       </div>

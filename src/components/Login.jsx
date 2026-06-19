@@ -28,6 +28,7 @@ export default function Login() {
   return (
     <div className="auth">
       <div className="auth-card">
+        <img src="/logo.png" className="brand-logo" alt="Karnavati University SGC" onError={(e) => { e.currentTarget.style.display = "none"; }} />
         <h1>🧠 AI Photo Sorter</h1>
         <p className="tagline">
           {mode === "in" ? "Sign in to your photo space" : "Create your photo space"}

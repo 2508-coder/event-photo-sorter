@@ -570,3 +570,6 @@ body::before { opacity: .8; } /* let the crystal read through the aurora */
 @media (max-width: 640px) {
   body::before { animation-duration: 48s; opacity: .8; }
 }
+
+.brand-logo { display:block; width:78px; height:78px; object-fit:contain; margin:0 auto 8px;
+  background:#fff; border-radius:18px; padding:9px; box-shadow:0 10px 26px rgba(0,0,0,.38); }

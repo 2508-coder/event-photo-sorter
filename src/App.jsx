@@ -392,6 +392,7 @@ export default function App() {
       </div>
 
       <motion.header initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+        <img src="/logo.png" className="brand-logo" alt="Karnavati University SGC" onError={(e) => { e.currentTarget.style.display = "none"; }} />
         <h1>🧠 AI Photo Sorter</h1>
         <p className="tagline">Search · Categories · People · Emotions · Events · Highlights · Captions · Privacy</p>
         <input className="name" placeholder="Display name (optional)" value={name} onChange={(e) => setName(e.target.value)} />
