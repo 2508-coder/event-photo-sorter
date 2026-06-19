@@ -12,7 +12,7 @@ export const ENGINE = "faceapi";          // "faceapi" = fast/light (bulk); "hum
 
 // Engine-matched thresholds (euclidean distance; lower = stricter).
 const CFG = {
-  faceapi: { MATCH: 0.5, CLUSTER: 0.55 },
+  faceapi: { MATCH: 0.47, CLUSTER: 0.54 },
   human:   { MATCH: 0.9, CLUSTER: 0.95 },
 };
 export const MATCH_THRESHOLD = CFG[ENGINE].MATCH;
