@@ -8,17 +8,38 @@
  input{width:100%;padding:11px;border-radius:9px;border:1px solid #284036;background:#15271e;color:#fff;margin-bottom:12px}
  button{padding:11px 18px;border:none;border-radius:9px;background:linear-gradient(135deg,#1fbf75,#e8b54a);color:#08130d;font-weight:700;cursor:pointer}
  #qr{margin:18px auto 6px;background:#fff;padding:14px;border-radius:14px;display:inline-block;min-height:10px}
+ #qr img{display:block;width:300px;height:300px}
  a.dl{display:none;margin-top:10px;color:#e8b54a;text-decoration:none;font-weight:600}
+ .err{color:#ff9a9a;font-size:13px}
 </style></head>
 <body><div class="box">
  <h2>📸 Event QR Code</h2>
  <p>Paste your deployed guest link (ends with <b>/guest.html</b>) to make a QR for your banner.</p>
- <input id="url" placeholder="https://your-site.netlify.app/guest.html" />
+ <input id="url" placeholder="https://your-site.vercel.app/guest.html" />
  <button onclick="gen()">Generate QR</button>
  <div id="qr"></div>
  <a id="dl" class="dl" download="event-qr.png">⬇️ Download QR (PNG)</a>
- <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
  <script>
- function gen(){var u=document.getElementById('url').value.trim();if(!u)return;var box=document.getElementById('qr');box.innerHTML='';var c=document.createElement('canvas');QRCode.toCanvas(c,u,{width:300,margin:2,color:{dark:'#08130d',light:'#ffffff'}},function(e){if(e){box.textContent='Error: '+e;return;}box.appendChild(c);var d=document.getElementById('dl');d.href=c.toDataURL('image/png');d.style.display='inline-block';});}
+ function gen(){
+   var u=document.getElementById('url').value.trim();
+   var box=document.getElementById('qr');
+   if(!u){ box.innerHTML='<span class="err">Enter a link first.</span>'; return; }
+   box.innerHTML='Generating…';
+   var api='https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=16&data='+encodeURIComponent(u);
+   var img=new Image();
+   img.onload=function(){
+     box.innerHTML=''; box.appendChild(img);
+     var d=document.getElementById('dl'); d.href=api; d.style.display='inline-block';
+   };
+   img.onerror=function(){ box.innerHTML='<span class="err">Could not reach the QR service — check your internet and try again.</span>'; };
+   img.src=api;
+ }
+ // download as a real PNG file (falls back to opening the image if blocked)
+ document.getElementById('dl').addEventListener('click', async function(e){
+   var api=this.href;
+   try{ e.preventDefault(); var r=await fetch(api); var b=await r.blob(); var url=URL.createObjectURL(b);
+     var a=document.createElement('a'); a.href=url; a.download='event-qr.png'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+   }catch(_){ window.open(api,'_blank'); }
+ });
  </script>
 </div></body></html>
