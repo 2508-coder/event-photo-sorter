@@ -244,9 +244,7 @@ export default function AdminDashboard({ photos, cameramen, onChanged }) {
 
       <h3 className="subh">Tag-me watchers ({watchers.length})</h3>
       <div className="panel">
-        <div className="admin-actions" style={{ marginBottom: 10 }}>
-          <button onClick={runAlerts} disabled={!!busy || !watchers.length}>🔔 Run alerts now</button>
-        </div>
+        <div className="note" style={{ marginBottom: 10 }}>🔔 Alerts are sent automatically by the Gmail emailer (Apps Script, every 15 min). No button needed.</div>
         {watchers.length ? (
           <table className="cmtable">
             <thead><tr><th>Email</th><th>Subscribed</th></tr></thead>
