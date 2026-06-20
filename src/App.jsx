@@ -33,7 +33,7 @@ function thumb(url, w = 400) {
   return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ""))}&w=${w}&output=webp&q=72`;
 }
 
-function PhotoCard({ p, score, blurred, onReveal, best, onDownload, onDelete }) {
+function PhotoCard({ p, score, blurred, onReveal, best, onDownload, onDelete, onPreview }) {
   const snippet = p.ocrText ? p.ocrText.replace(/\s+/g, " ").slice(0, 90) : "";
   return (
     <motion.div className={"card" + (blurred ? " sensitive" : "")} whileHover={{ y: -5 }} whileTap={{ scale: 0.99 }} transition={{ type: "spring", stiffness: 300, damping: 22 }}>
@@ -45,7 +45,9 @@ function PhotoCard({ p, score, blurred, onReveal, best, onDownload, onDelete }) 
         loading="lazy"
         decoding="async"
         alt=""
-        title={p.ocrText || ""}
+        title={blurred ? "" : "Click to preview"}
+        style={{ cursor: blurred ? "default" : "zoom-in" }}
+        onClick={() => { if (!blurred && onPreview) onPreview(p); }}
         onError={(e) => { if (e.currentTarget.src !== p.url) e.currentTarget.src = p.url; }}
       />
       <div className="actions">
@@ -86,6 +88,7 @@ export default function App() {
   const [cameramen, setCameramen] = useState([]);
   const [limit, setLimit] = useState(150); // how many cards to render (pagination)
   const [heavyMap, setHeavyMap] = useState(null); // id -> { embedding, faces }, loaded lazily
+  const [preview, setPreview] = useState(null); // photo open in the lightbox
   const heavyCount = useRef(-1);
   const processing = useRef(false);
 
@@ -168,6 +171,7 @@ export default function App() {
               onReveal={reveal}
               onDownload={handleDownload}
               onDelete={handleDelete}
+              onPreview={setPreview}
             />
           ))}
         </div>
@@ -571,6 +575,14 @@ export default function App() {
         </motion.div>
         </AnimatePresence>
       </main>
+
+      {preview && (
+        <div className="lightbox" onClick={() => setPreview(null)}>
+          <button className="lb-close" title="Close" onClick={() => setPreview(null)}>✕</button>
+          <img src={preview.url} alt="" onClick={(e) => e.stopPropagation()} />
+          {preview.caption ? <div className="lb-cap">{preview.caption}</div> : null}
+        </div>
+      )}
     </div>
   );
 }
