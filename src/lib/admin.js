@@ -62,7 +62,7 @@ export async function downloadPhoto(p) {
 }
 
 // ---- Watermark + Best-of PDF (CDN-loaded jsPDF) ----
-const JSPDF_CDN = "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.es.min.js";
+const JSPDF_CDN = "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/+esm";
 
 function loadImg(url) {
   return new Promise((res, rej) => {
