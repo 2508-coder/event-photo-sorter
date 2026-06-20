@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import CameraCapture from "./components/CameraCapture.jsx";
 import Uploader from "./components/Uploader.jsx";
 import Login from "./components/Login.jsx";
 import AdminPanel from "./components/AdminPanel.jsx";
@@ -75,7 +74,6 @@ export default function App() {
   const [people, setPeople] = useState([]);
   const [albums, setAlbums] = useState([]);
   const [tab, setTab] = useState("Search");
-  const [addMode, setAddMode] = useState("camera");
   const [name, setName] = useState("");
   const [aiStatus, setAiStatus] = useState("Idle");
   const [query, setQuery] = useState("");
@@ -399,13 +397,7 @@ export default function App() {
       </motion.header>
 
       <motion.section className="add" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.05 }}>
-        <div className="seg">
-          <button className={addMode === "camera" ? "on" : ""} onClick={() => setAddMode("camera")}>📷 Camera</button>
-          <button className={addMode === "upload" ? "on" : ""} onClick={() => setAddMode("upload")}>📁 Upload</button>
-        </div>
-        {addMode === "camera"
-          ? <CameraCapture uploader={name || user.email} uid={user.uid} />
-          : <Uploader uploader={name || user.email} uid={user.uid} />}
+        <Uploader uploader={name || user.email} uid={user.uid} />
       </motion.section>
 
       <motion.div className="stats" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
