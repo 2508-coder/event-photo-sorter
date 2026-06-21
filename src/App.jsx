@@ -107,6 +107,18 @@ export default function App() {
   useEffect(() => { if (role === "admin") setTab("Dashboard"); }, [role]);
   useEffect(() => { setLimit(150); }, [tab, lastQuery]); // reset paging when view changes
 
+  // Lightbox keyboard nav: Esc closes, arrows move between photos.
+  useEffect(() => {
+    if (!preview) return;
+    function onKey(e) {
+      if (e.key === "Escape") setPreview(null);
+      else if (e.key === "ArrowLeft") setPreview((pv) => pv ? { ...pv, index: Math.max(0, pv.index - 1) } : pv);
+      else if (e.key === "ArrowRight") setPreview((pv) => pv ? { ...pv, index: Math.min(pv.list.length - 1, pv.index + 1) } : pv);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [preview]);
+
   useEffect(() => {
     if (!user || !role) { setPhotos([]); return; }
     return role === "admin" ? subscribeAllPhotos(setPhotos) : subscribePhotos(user.uid, setPhotos);
@@ -162,7 +174,7 @@ export default function App() {
     return (
       <>
         <div className="grid">
-          {shown.map((p) => (
+          {shown.map((p, i) => (
             <PhotoCard
               key={p.id + (p._k || "")}
               p={p}
@@ -172,7 +184,7 @@ export default function App() {
               onReveal={reveal}
               onDownload={handleDownload}
               onDelete={handleDelete}
-              onPreview={setPreview}
+              onPreview={() => setPreview({ list: shown, index: i })}
             />
           ))}
         </div>
@@ -381,6 +393,7 @@ export default function App() {
   );
   const pending = photos.filter((p) => !p.processed).length;
 
+  const previewPhoto = preview ? preview.list[preview.index] : null;
   const visibleTabs = role === "admin" ? ["Dashboard", ...TABS, "Cameramen"] : TABS;
 
   if (user === undefined) return <div className="boot">Loading…</div>;
@@ -577,11 +590,18 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      {preview && createPortal(
+      {preview && previewPhoto && createPortal(
         <div className="lightbox" onClick={() => setPreview(null)}>
           <button className="lb-close" title="Close" onClick={() => setPreview(null)}>✕</button>
-          <img src={thumb(preview.url, 1600)} alt="" onClick={(e) => e.stopPropagation()} onError={(e) => { if (e.currentTarget.src !== preview.url) e.currentTarget.src = preview.url; }} />
-          {preview.caption ? <div className="lb-cap">{preview.caption}</div> : null}
+          {preview.index > 0 && (
+            <button className="lb-nav lb-prev" title="Previous" onClick={(e) => { e.stopPropagation(); setPreview((pv) => ({ ...pv, index: pv.index - 1 })); }}>‹</button>
+          )}
+          <img src={thumb(previewPhoto.url, 1600)} alt="" onClick={(e) => e.stopPropagation()} onError={(e) => { if (e.currentTarget.src !== previewPhoto.url) e.currentTarget.src = previewPhoto.url; }} />
+          {preview.index < preview.list.length - 1 && (
+            <button className="lb-nav lb-next" title="Next" onClick={(e) => { e.stopPropagation(); setPreview((pv) => ({ ...pv, index: pv.index + 1 })); }}>›</button>
+          )}
+          <div className="lb-count">{preview.index + 1} / {preview.list.length}</div>
+          {previewPhoto.caption ? <div className="lb-cap">{previewPhoto.caption}</div> : null}
         </div>,
         document.body
       )}

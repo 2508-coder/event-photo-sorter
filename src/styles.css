@@ -583,3 +583,12 @@ body::before { opacity: .8; } /* let the crystal read through the aurora */
 .lb-close:hover { background: rgba(255,255,255,.28); }
 .lb-cap { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
   background: rgba(0,0,0,.6); color: #fff; padding: 8px 14px; border-radius: 999px; font-size: 13px; max-width: 90vw; }
+
+.lb-nav { position: fixed; top: 50%; transform: translateY(-50%); width: 52px; height: 64px;
+  border: none; background: rgba(255,255,255,.14); color: #fff; font-size: 34px; line-height: 1;
+  cursor: pointer; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.lb-nav:hover { background: rgba(255,255,255,.28); }
+.lb-prev { left: 14px; } .lb-next { right: 14px; }
+.lb-count { position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,.55); color: #fff; padding: 5px 12px; border-radius: 999px; font-size: 13px; }
+@media (max-width: 640px) { .lb-nav { width: 40px; height: 54px; font-size: 26px; } }
