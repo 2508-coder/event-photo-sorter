@@ -19,6 +19,7 @@ import { embedText, cosine } from "./ai/clip.js";
 import { clusterDescriptors, meanDescriptor, descriptorDistance, MATCH_THRESHOLD } from "./ai/faces.js";
 import { hammingHex, DUP_HAMMING } from "./ai/quality.js";
 import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 
 const TABS = ["Search", "Albums", "Categories", "People", "Find Me", "Emotions", "Events", "Highlights", "Documents", "Duplicates", "Quality", "Map", "All", "Admin"];
 
@@ -576,12 +577,13 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      {preview && (
+      {preview && createPortal(
         <div className="lightbox" onClick={() => setPreview(null)}>
           <button className="lb-close" title="Close" onClick={() => setPreview(null)}>✕</button>
           <img src={preview.url} alt="" onClick={(e) => e.stopPropagation()} />
           {preview.caption ? <div className="lb-cap">{preview.caption}</div> : null}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
