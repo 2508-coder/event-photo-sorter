@@ -580,7 +580,7 @@ export default function App() {
       {preview && createPortal(
         <div className="lightbox" onClick={() => setPreview(null)}>
           <button className="lb-close" title="Close" onClick={() => setPreview(null)}>✕</button>
-          <img src={preview.url} alt="" onClick={(e) => e.stopPropagation()} />
+          <img src={thumb(preview.url, 1600)} alt="" onClick={(e) => e.stopPropagation()} onError={(e) => { if (e.currentTarget.src !== preview.url) e.currentTarget.src = preview.url; }} />
           {preview.caption ? <div className="lb-cap">{preview.caption}</div> : null}
         </div>,
         document.body
