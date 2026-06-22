@@ -8,7 +8,7 @@
 // ENGINE you MUST re-process every photo (`update public.photos set processed=false;`)
 // so stored faces match new scans.
 
-export const ENGINE = "faceapi";          // "faceapi" = fast/light (bulk); "human" = more accurate
+export const ENGINE = "human";          // ArcFace-style, more accurate (reprocess after switching)
 
 // Engine-matched thresholds (euclidean distance; lower = stricter).
 const CFG = {
