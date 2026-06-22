@@ -91,6 +91,7 @@ export default function App() {
   const [heavyMap, setHeavyMap] = useState(null); // id -> { embedding, faces }, loaded lazily
   const [preview, setPreview] = useState(null); // photo open in the lightbox
   const heavyCount = useRef(-1);
+  const touchX = useRef(null);
   const processing = useRef(false);
 
   useEffect(() => watchAuth(setUser), []);
@@ -596,7 +597,19 @@ export default function App() {
           {preview.index > 0 && (
             <button className="lb-nav lb-prev" title="Previous" onClick={(e) => { e.stopPropagation(); setPreview((pv) => ({ ...pv, index: pv.index - 1 })); }}>‹</button>
           )}
-          <img src={thumb(previewPhoto.url, 1600)} alt="" onClick={(e) => e.stopPropagation()} onError={(e) => { if (e.currentTarget.src !== previewPhoto.url) e.currentTarget.src = previewPhoto.url; }} />
+          <img
+            src={thumb(previewPhoto.url, 1600)}
+            alt=""
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => { touchX.current = e.touches[0].clientX; }}
+            onTouchEnd={(e) => {
+              if (touchX.current == null) return;
+              const dx = e.changedTouches[0].clientX - touchX.current; touchX.current = null;
+              if (dx > 50) setPreview((pv) => (pv ? { ...pv, index: Math.max(0, pv.index - 1) } : pv));
+              else if (dx < -50) setPreview((pv) => (pv ? { ...pv, index: Math.min(pv.list.length - 1, pv.index + 1) } : pv));
+            }}
+            onError={(e) => { if (e.currentTarget.src !== previewPhoto.url) e.currentTarget.src = previewPhoto.url; }}
+          />
           {preview.index < preview.list.length - 1 && (
             <button className="lb-nav lb-next" title="Next" onClick={(e) => { e.stopPropagation(); setPreview((pv) => ({ ...pv, index: pv.index + 1 })); }}>›</button>
           )}
