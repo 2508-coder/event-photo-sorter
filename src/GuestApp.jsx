@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { detectFaces, descriptorDistance, meanDescriptor, MATCH_THRESHOLD } from "./ai/faces.js";
 import { fetchAllFacePhotos, logGuestScan, addWatcher } from "./lib/guest.js";
+import { createPortal } from "react-dom";
 import { showToast } from "./lib/toast.js";
 import { downloadPhoto, downloadAllZip } from "./lib/admin.js";
 
@@ -16,6 +17,11 @@ function bestFace(faces) {
     .sort((a, b) => b.size - a.size)[0] || null;
 }
 
+function thumb(url, w = 400) {
+  if (!url) return url;
+  return `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ""))}&w=${w}&output=webp&q=72`;
+}
+
 export default function GuestApp() {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
@@ -27,6 +33,8 @@ export default function GuestApp() {
   const [lastDesc, setLastDesc] = useState(null);
   const [email, setEmail] = useState("");
   const [notifyMsg, setNotifyMsg] = useState("");
+  const [preview, setPreview] = useState(null);
+  const touchX = useRef(null);
 
   async function startCam() {
     stopCam();
@@ -39,6 +47,17 @@ export default function GuestApp() {
   }
   function stopCam() { streamRef.current?.getTracks().forEach((t) => t.stop()); streamRef.current = null; setOn(false); }
   useEffect(() => () => stopCam(), []);
+
+  useEffect(() => {
+    if (!preview) return;
+    function onKey(e) {
+      if (e.key === "Escape") setPreview(null);
+      else if (e.key === "ArrowLeft") setPreview((pv) => pv ? { ...pv, index: Math.max(0, pv.index - 1) } : pv);
+      else if (e.key === "ArrowRight") setPreview((pv) => pv ? { ...pv, index: Math.min(pv.list.length - 1, pv.index + 1) } : pv);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [preview]);
 
   async function notifyMe() {
     if (!email.trim() || !lastDesc) return;
@@ -123,6 +142,8 @@ export default function GuestApp() {
 
   const showScanner = matches === null || busy || matches.length === 0;
 
+  const previewPhoto = preview ? preview.list[preview.index] : null;
+
   return (
     <div className="guest">
       <div className="guest-hero">
@@ -172,9 +193,9 @@ export default function GuestApp() {
             </span>
           </div>
           <div className="grid">
-            {matches.map((p) => (
+            {matches.map((p, i) => (
               <div className="card" key={p.id}>
-                <img src={p.url} loading="lazy" alt="" />
+                <img src={thumb(p.url)} loading="lazy" alt="" style={{ cursor: "zoom-in" }} onClick={() => setPreview({ list: matches, index: i })} onError={(e) => { if (e.currentTarget.src !== p.url) e.currentTarget.src = p.url; }} />
                 <div className="actions">
                   <button title="Download" onClick={() => downloadPhoto(p)}>⬇️</button>
                 </div>
@@ -195,6 +216,33 @@ export default function GuestApp() {
           </div>
           <div className="status">{notifyMsg}</div>
         </div>
+      )}
+
+      {preview && previewPhoto && createPortal(
+        <div className="lightbox" onClick={() => setPreview(null)}>
+          <button className="lb-close" title="Close" onClick={() => setPreview(null)}>✕</button>
+          {preview.index > 0 && (
+            <button className="lb-nav lb-prev" title="Previous" onClick={(e) => { e.stopPropagation(); setPreview((pv) => ({ ...pv, index: pv.index - 1 })); }}>‹</button>
+          )}
+          <img
+            src={thumb(previewPhoto.url, 1600)}
+            alt=""
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => { touchX.current = e.touches[0].clientX; }}
+            onTouchEnd={(e) => {
+              if (touchX.current == null) return;
+              const dx = e.changedTouches[0].clientX - touchX.current; touchX.current = null;
+              if (dx > 50) setPreview((pv) => (pv ? { ...pv, index: Math.max(0, pv.index - 1) } : pv));
+              else if (dx < -50) setPreview((pv) => (pv ? { ...pv, index: Math.min(pv.list.length - 1, pv.index + 1) } : pv));
+            }}
+            onError={(e) => { if (e.currentTarget.src !== previewPhoto.url) e.currentTarget.src = previewPhoto.url; }}
+          />
+          {preview.index < preview.list.length - 1 && (
+            <button className="lb-nav lb-next" title="Next" onClick={(e) => { e.stopPropagation(); setPreview((pv) => ({ ...pv, index: pv.index + 1 })); }}>›</button>
+          )}
+          <div className="lb-count">{preview.index + 1} / {preview.list.length}</div>
+        </div>,
+        document.body
       )}
     </div>
   );
