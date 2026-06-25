@@ -13,7 +13,7 @@ export const ENGINE = "human";          // ArcFace-style, more accurate (reproce
 // Engine-matched thresholds (euclidean distance; lower = stricter).
 const CFG = {
   faceapi: { MATCH: 0.47, CLUSTER: 0.54 },
-  human:   { MATCH: 0.9, CLUSTER: 0.95 },
+  human:   { MATCH: 0.75, CLUSTER: 0.85 },
 };
 export const MATCH_THRESHOLD = CFG[ENGINE].MATCH;
 export const CLUSTER_THRESHOLD = CFG[ENGINE].CLUSTER;

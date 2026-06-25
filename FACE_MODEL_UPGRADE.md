@@ -42,10 +42,10 @@ Do this on a quiet day, NOT during the event.
 ## Tuning (if needed)
 In `src/ai/faces.js`, the `human` line controls strictness:
 ```js
-human: { MATCH: 0.9, CLUSTER: 0.95 },
+human: { MATCH: 0.75, CLUSTER: 0.85 },
 ```
-- Too many WRONG matches → lower `MATCH` (e.g. 0.8, then 0.75).
-- Missing REAL matches → raise `MATCH` (e.g. 1.0).
+- Too many WRONG matches → lower `MATCH` (e.g. 0.70, then 0.65).
+- Missing REAL matches → raise `MATCH` (e.g. 0.80, then 0.85).
 Rebuild + redeploy after each change (no reprocess needed for threshold-only changes).
 
 ## Revert instantly
